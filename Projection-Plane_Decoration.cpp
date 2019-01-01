@@ -1,0 +1,439 @@
+#include <GL/glut.h>
+#include <iostream>
+#include <unistd.h>
+#include <math.h> 
+
+/*****************************************************
+ * Program: decor.c  Coded by: Harry Li              *
+ * Version: x1.0;    status: tested;                 *
+ * Compile and build:                                *
+ * g++ main.cpp -o main.o -lGL -lGLU -lglut -lm      *
+ * Date: Jun 5, 2014                                 * 
+ * Purpose: decoration Demo.                         *  
+ *****************************************************/ 
+
+
+#define UpperBD 50
+#define PI  	3.1415926 
+#define Num_pts 10
+using namespace std;
+float Xe = 200.0f;
+float Ye = 200.0f;
+float Ze = 200.0f; 
+float Rho = sqrt(pow(Xe,2) + pow(Ye,2) + pow(Ze,2)); 
+float D_focal = 20.0f;  
+
+typedef struct {
+	float X[UpperBD];
+	float Y[UpperBD];
+	float Z[UpperBD];
+} pworld;
+
+typedef struct {
+	float X[UpperBD];
+	float Y[UpperBD];
+	float Z[UpperBD];
+} pviewer;
+
+typedef struct{
+	float X[UpperBD];
+	float Y[UpperBD]; 
+} pperspective;
+
+typedef struct{
+	float X[UpperBD];
+	float Y[UpperBD]; 
+} pattern2DL;
+
+void mydisplay()
+{
+// define x-y coordinate 
+float p1x=-1.0f,  p1y= 0.0f;    
+float p2x= 1.0f,  p2y= 0.0f;
+float p3x= 0.0f,  p3y= 1.0f;
+float p4x= 0.0f,  p4y=-1.0f;
+
+glClear(GL_COLOR_BUFFER_BIT);
+glLoadIdentity(); 
+
+pworld  world;
+pviewer viewer;
+pperspective perspective;
+pattern2DL letterL; 
+
+//define the x-y-z world coordinate 
+world.X[0] = 0.0;    world.Y[0] =  0.0;   world.Z[0] =  0.0;    // origin  
+world.X[1] = 50.0;   world.Y[1] =  0.0;   world.Z[1] =  0.0;    // x-axis
+world.X[2] = 0.0;    world.Y[2] =  50.0;  world.Z[2] =  0.0;    // y-axis    
+world.X[3] = 0.0;    world.Y[3] =  0.0;   world.Z[3] =  50.0;   // y-axis 
+
+//define projection plane world coordinate 
+world.X[4] = 60.0;   world.Y[4] = -50.0;   world.Z[4] =  0.0;     
+world.X[5] = 60.0;   world.Y[5] =  50.0;   world.Z[5] =  0.0;    // base line
+world.X[7] = 60.0;   world.Y[7] = -50.0;   world.Z[7] = 100.0;   // side bar
+world.X[6] = 60.0;   world.Y[6] =  50.0;   world.Z[6] =  100.0;    // side bar
+
+//define 2D pattern letter A 
+letterL.X[0] = -10.0; letterL.Y[0] = 10.0;     
+letterL.X[1] = -15.0; letterL.Y[1] = 10.0;  
+letterL.X[2] = -20.0; letterL.Y[2] = 30.0;     
+letterL.X[3] = -40.0; letterL.Y[3] = 30.0; 
+letterL.X[4] = -45.0; letterL.Y[4] = 10.0;   
+letterL.X[5] = -50.0; letterL.Y[5] = 10.0;
+letterL.X[6] = -37.0; letterL.Y[6] = 70.0;
+letterL.X[7] = -23.0; letterL.Y[7] = 70.0;
+letterL.X[8] = -25.0; letterL.Y[8] = 40.0;
+letterL.X[9] = -35.0; letterL.Y[9] = 40.0;
+letterL.X[10] = -30.0; letterL.Y[10] = 60.0;
+
+//letter B
+letterL.X[11] = 10.0; letterL.Y[11] = 10.0;     
+letterL.X[12] = 10.0; letterL.Y[12] = 70.0;  
+letterL.X[13] = 20.0; letterL.Y[13] = 10.0;     
+letterL.X[14] = 20.0; letterL.Y[14] = 70.0; 
+
+letterL.X[15] = 20.0; letterL.Y[15] = 60.0;   
+letterL.X[16] = 20.0; letterL.Y[16] = 45.0;
+letterL.X[17] = 20.0; letterL.Y[17] = 35.0;
+letterL.X[18] = 20.0; letterL.Y[18] = 20.0;
+
+letterL.X[19] = 25.0; letterL.Y[19] = 58.0;
+letterL.X[20] = 27.0; letterL.Y[20] = 56.0;
+letterL.X[21] = 28.0; letterL.Y[21] = 52.0;
+letterL.X[22] = 27.0; letterL.Y[22] = 49.0;
+letterL.X[23] = 25.0; letterL.Y[23] = 47.0;
+
+letterL.X[24] = 25.0; letterL.Y[24] = 33.0;
+letterL.X[25] = 27.0; letterL.Y[25] = 31.0;
+letterL.X[26] = 28.0; letterL.Y[26] = 27.0;
+letterL.X[27] = 27.0; letterL.Y[27] = 24.0;
+letterL.X[28] = 25.0; letterL.Y[28] = 22.0;
+
+letterL.X[29] = 30.0; letterL.Y[29] = 65.0;
+letterL.X[30] = 34.0; letterL.Y[30] = 60.0;
+letterL.X[31] = 34.0; letterL.Y[31] = 50.0;
+letterL.X[32] = 30.0; letterL.Y[32] = 45.0;
+
+letterL.X[33] = 25.0; letterL.Y[33] = 40.0;
+
+letterL.X[34] = 30.0; letterL.Y[34] = 38.0;
+letterL.X[35] = 34.0; letterL.Y[35] = 30.0;
+letterL.X[36] = 34.0; letterL.Y[36] = 20.0;
+letterL.X[37] = 30.0; letterL.Y[37] = 15.0;
+
+
+
+float sPheta = Ye / sqrt(pow(Xe,2) + pow(Ye,2));
+float cPheta = Xe / sqrt(pow(Xe,2) + pow(Ye,2));
+float sPhi = sqrt(pow(Xe,2) + pow(Ye,2)) / Rho;
+float cPhi = Ze / Rho;
+
+float xMin = 1000.0, xMax = -1000.0;
+float yMin = 1000.0, yMax = -1000.0;
+
+//decoration 
+for(int i = 0; i <= 37; i++)
+{
+  world.X[8+i] = 60.0;
+  world.Y[8+i] = letterL.X[i];
+  world.Z[8+i] = letterL.Y[i];
+}
+
+
+for(int i = 0; i < UpperBD; i++)
+{
+  viewer.X[i] = -sPheta * world.X[i] + cPheta * world.Y[i];
+  viewer.Y[i] = -cPheta * cPhi * world.X[i]  
+		   - cPhi * sPheta * world.Y[i] 
+		   + sPhi * world.Z[i];
+  viewer.Z[i] = -sPhi * cPheta * world.X[i] 
+		   - sPhi * cPheta * world.Y[i]
+		   -cPheta * world.Z[i] + Rho;
+          // cout << i;
+}
+
+for(int i = 0; i <= UpperBD; i++)
+{
+  perspective.X[i] = D_focal * viewer.X[i] / viewer.Z[i] ;
+  perspective.Y[i] = D_focal * viewer.Y[i] / viewer.Z[i] ;
+  if (perspective.X[i] > xMax) xMax = perspective.X[i]; 
+  if (perspective.X[i] < xMin) xMin = perspective.X[i]; 
+  if (perspective.Y[i] > yMax) yMax = perspective.Y[i]; 
+  if (perspective.Y[i] < yMin) yMin = perspective.Y[i];  
+/*
+  std::cout << "xMin " << xMin << std::endl;
+  std::cout << "xMax " << xMax << std::endl;
+  std::cout << "yMin " << yMin << std::endl;
+  std::cout << "yMax " << yMax << std::endl;
+*/
+}
+for(int i = 0; i <= UpperBD; i++)
+{
+  if ((xMax-xMin) != 0) perspective.X[i] = perspective.X[i]/(xMax-xMin);
+  if ((yMax-yMin) != 0) perspective.Y[i] = perspective.Y[i]/(yMax-yMin);
+  std::cout << i << perspective.X[i] << perspective.Y[i] << std::endl;
+}
+
+ 
+glBegin(GL_LINES); 
+// cross at the display screen 
+//glVertex2f(p1x,p1y);  
+//glVertex2f(p2x,p2y);
+//glVertex2f(p3x, p3y);
+//glVertex2f(p4x, p4y);
+//every 2 vertex is one line
+   
+  glClear(GL_COLOR_BUFFER_BIT);
+  glColor3f(1.0, 0.0, 0.0);
+  glVertex2f(perspective.X[0],perspective.Y[0]);  
+  glVertex2f(perspective.X[1],perspective.Y[1]); 
+  glColor3f(0.0, 1.0, 0.0);
+  glVertex2f(perspective.X[0],perspective.Y[0]);  
+  glVertex2f(perspective.X[2],perspective.Y[2]); 
+  glColor3f(0.0, 0.0, 1.0);
+  glVertex2f(perspective.X[0],perspective.Y[0]);  
+  glVertex2f(perspective.X[3],perspective.Y[3]); 
+
+  glColor3f(1.0, 1.0, 0.0);  // projection plane , square
+  glVertex2f(perspective.X[4],perspective.Y[4]);  
+  glVertex2f(perspective.X[5],perspective.Y[5]); 
+  glVertex2f(perspective.X[4],perspective.Y[4]);  
+  glVertex2f(perspective.X[7],perspective.Y[7]); 
+  glVertex2f(perspective.X[5],perspective.Y[5]);  
+  glVertex2f(perspective.X[6],perspective.Y[6]); 
+  glVertex2f(perspective.X[6],perspective.Y[6]);  
+  glVertex2f(perspective.X[7],perspective.Y[7]); 
+ glEnd();
+
+  glColor3f(0.0, 1.0, 0.0);  // LETTER A STARTS HERE
+glBegin(GL_POLYGON);
+       glVertex2f(perspective.X[13],perspective.Y[13]); 
+    glVertex2f(perspective.X[12],perspective.Y[12]);
+ 
+    glVertex2f(perspective.X[11],perspective.Y[11]); 
+    glVertex2f(perspective.X[12],perspective.Y[12]);
+    
+     glVertex2f(perspective.X[14],perspective.Y[14]); 
+      glVertex2f(perspective.X[13],perspective.Y[13]); 
+    
+     glVertex2f(perspective.X[18],perspective.Y[18]); 
+      glVertex2f(perspective.X[17],perspective.Y[17]); 
+    
+     glVertex2f(perspective.X[11],perspective.Y[11]); 
+      glVertex2f(perspective.X[17],perspective.Y[17]); 
+      
+      
+     glVertex2f(perspective.X[18],perspective.Y[18]); 
+      glVertex2f(perspective.X[14],perspective.Y[14]); 
+    
+      
+      glEnd();
+  glColor3f(0.0, 1.0, 0.0);  
+glBegin(GL_POLYGON);
+    
+    
+    
+     glVertex2f(perspective.X[8],perspective.Y[8]); 
+      glVertex2f(perspective.X[15],perspective.Y[15]); 
+    
+     glVertex2f(perspective.X[14],perspective.Y[14]); 
+      glVertex2f(perspective.X[15],perspective.Y[15]); 
+      
+      glVertex2f(perspective.X[14],perspective.Y[14]); 
+      glVertex2f(perspective.X[18],perspective.Y[18]); 
+   
+     glVertex2f(perspective.X[16],perspective.Y[16]); 
+      glVertex2f(perspective.X[18],perspective.Y[18]);
+   
+     glVertex2f(perspective.X[16],perspective.Y[16]); 
+      glVertex2f(perspective.X[10],perspective.Y[10]);
+   
+    glVertex2f(perspective.X[9],perspective.Y[9]);
+  glVertex2f(perspective.X[10],perspective.Y[10]);
+  
+   glVertex2f(perspective.X[8],perspective.Y[8]); 
+  glVertex2f(perspective.X[9],perspective.Y[9]); 
+  
+   
+     glEnd();
+  glColor3f(0.0, 1.0, 0.0);  
+glBegin(GL_POLYGON);
+   
+    glVertex2f(perspective.X[16],perspective.Y[16]); 
+      glVertex2f(perspective.X[17],perspective.Y[17]); 
+    
+     glVertex2f(perspective.X[11],perspective.Y[11]); 
+    glVertex2f(perspective.X[10],perspective.Y[10]); 
+    
+      glVertex2f(perspective.X[11],perspective.Y[11]); 
+    glVertex2f(perspective.X[17],perspective.Y[17]); 
+    
+    glVertex2f(perspective.X[16],perspective.Y[16]); 
+      glVertex2f(perspective.X[10],perspective.Y[10]); 
+   
+   
+     glEnd();
+  glColor3f(0.0, 1.0, 0.0);  //LETTER B STARTS HERE
+glBegin(GL_POLYGON);
+   
+    glVertex2f(perspective.X[19],perspective.Y[19]); 
+      glVertex2f(perspective.X[20],perspective.Y[20]);
+    
+    glVertex2f(perspective.X[21],perspective.Y[21]); 
+      glVertex2f(perspective.X[19],perspective.Y[19]);
+    
+     glVertex2f(perspective.X[20],perspective.Y[20]); 
+      glVertex2f(perspective.X[22],perspective.Y[22]);
+
+ glVertex2f(perspective.X[23],perspective.Y[23]); 
+      glVertex2f(perspective.X[22],perspective.Y[22]);
+      
+      glVertex2f(perspective.X[21],perspective.Y[21]); 
+      glVertex2f(perspective.X[26],perspective.Y[26]);
+      
+    glVertex2f(perspective.X[25],perspective.Y[25]); 
+      glVertex2f(perspective.X[24],perspective.Y[24]);
+
+ glEnd();
+  glColor3f(0.0, 1.0, 0.0); 
+glBegin(GL_LINES);
+//      
+       glVertex2f(perspective.X[23],perspective.Y[23]); 
+      glVertex2f(perspective.X[24],perspective.Y[24]);
+    
+    
+     glVertex2f(perspective.X[25],perspective.Y[25]); 
+      glVertex2f(perspective.X[26],perspective.Y[26]);
+      
+      
+      
+      glEnd();
+  glColor3f(0.0, 1.0, 0.0);  
+glBegin(GL_POLYGON);
+
+ 
+      
+    
+      glVertex2f(perspective.X[27],perspective.Y[27]); 
+      glVertex2f(perspective.X[28],perspective.Y[28]); 
+      
+        glVertex2f(perspective.X[27],perspective.Y[27]); 
+      glVertex2f(perspective.X[23],perspective.Y[23]); 
+      
+      glVertex2f(perspective.X[29],perspective.Y[29]); 
+      glVertex2f(perspective.X[28],perspective.Y[28]);
+      
+       glVertex2f(perspective.X[22],perspective.Y[22]); 
+      glVertex2f(perspective.X[37],perspective.Y[37]);
+      
+        glVertex2f(perspective.X[38],perspective.Y[38]); 
+      glVertex2f(perspective.X[37],perspective.Y[37]);
+      
+       glVertex2f(perspective.X[38],perspective.Y[38]); 
+      glVertex2f(perspective.X[39],perspective.Y[39]);
+      
+        glVertex2f(perspective.X[29],perspective.Y[29]); 
+      glVertex2f(perspective.X[39],perspective.Y[39]);
+      
+      
+          glEnd();
+  glColor3f(0.0, 1.0, 0.0);  
+glBegin(GL_POLYGON);
+
+      
+      
+      
+        glVertex2f(perspective.X[29],perspective.Y[29]); 
+      glVertex2f(perspective.X[30],perspective.Y[30]);
+      
+        glVertex2f(perspective.X[24],perspective.Y[24]); 
+      glVertex2f(perspective.X[30],perspective.Y[30]);
+      
+       
+       
+       
+      
+       glVertex2f(perspective.X[40],perspective.Y[40]); 
+      glVertex2f(perspective.X[39],perspective.Y[39]);
+      
+        glVertex2f(perspective.X[40],perspective.Y[40]); 
+      glVertex2f(perspective.X[41],perspective.Y[41]);
+      
+       glVertex2f(perspective.X[24],perspective.Y[24]); 
+      glVertex2f(perspective.X[41],perspective.Y[41]);
+      
+      
+      
+      glEnd();
+  glColor3f(0.0, 1.0, 0.0);  
+glBegin(GL_POLYGON);
+      
+       glVertex2f(perspective.X[24],perspective.Y[24]); 
+      glVertex2f(perspective.X[41],perspective.Y[41]);
+      
+        glVertex2f(perspective.X[25],perspective.Y[25]); 
+      glVertex2f(perspective.X[32],perspective.Y[32]);
+      
+       glVertex2f(perspective.X[33],perspective.Y[33]); 
+      glVertex2f(perspective.X[32],perspective.Y[32]);
+      
+          glVertex2f(perspective.X[33],perspective.Y[33]); 
+      glVertex2f(perspective.X[34],perspective.Y[34]);
+      
+        glVertex2f(perspective.X[42],perspective.Y[42]); 
+      glVertex2f(perspective.X[41],perspective.Y[41]);
+      
+       glVertex2f(perspective.X[42],perspective.Y[42]); 
+      glVertex2f(perspective.X[43],perspective.Y[43]);
+      
+       glEnd();
+  glColor3f(0.0, 1.0, 0.0); 
+glBegin(GL_POLYGON);
+      
+      
+      
+      
+       glVertex2f(perspective.X[35],perspective.Y[35]); 
+      glVertex2f(perspective.X[34],perspective.Y[34]);
+      
+       glVertex2f(perspective.X[35],perspective.Y[35]); 
+      glVertex2f(perspective.X[36],perspective.Y[36]);
+      
+        glVertex2f(perspective.X[26],perspective.Y[26]); 
+      glVertex2f(perspective.X[36],perspective.Y[36]);
+      
+      
+      
+ 
+      
+      
+      
+      
+     
+      
+        glVertex2f(perspective.X[44],perspective.Y[44]); 
+      glVertex2f(perspective.X[43],perspective.Y[43]);
+      
+        glVertex2f(perspective.X[44],perspective.Y[44]); 
+      glVertex2f(perspective.X[45],perspective.Y[45]);
+      
+      glVertex2f(perspective.X[21],perspective.Y[21]); 
+      glVertex2f(perspective.X[45],perspective.Y[45]);
+
+
+
+glEnd();
+
+glFlush();
+//sleep(5);
+}
+
+int main(int argc, char** argv)
+{
+glutInit(&argc,argv);
+glutCreateWindow("132 transformation pipeline");
+glutDisplayFunc(mydisplay);
+glutMainLoop();
+}
+
+
